@@ -1,0 +1,13 @@
+---
+
+- name: restart apache
+  service: name=httpd state=restarted
+
+- name: restart php-fpm
+  service: name=php-fpm state=restarted
+  when: php_custom == 'no'
+
+- name: restart {{ php_version }}-php-fpm
+  service: name={{ php_version }}-php-fpm state=restarted
+  when: php_custom == 'yes'
+

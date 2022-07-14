@@ -1,0 +1,28 @@
+---
+
+- name: Installing Apache
+  dnf: name=httpd state=present
+  ignore_errors: False
+
+- name: Opening HTTP firewall port
+  firewalld:
+   service: http
+   zone: public
+   permanent: true
+   state: enabled
+   immediate: yes
+  ignore_errors: true
+
+- name: Enable service Apache2
+  service: name=httpd state=started enabled=yes
+  notify: restart apache
+
+- name: Enable service php-fpm
+  service: name=php-fpm state=started enabled=yes
+  notify: restart php-fpm
+  when: ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8' and php_custom == 'no'
+
+- name: Enable service php-fpm
+  service: name={{ php_version }}-php-fpm state=started enabled=yes
+  notify: restart {{ php_version }}-php-fpm
+  when: ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8' and php_custom == 'yes'

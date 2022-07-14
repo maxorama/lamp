@@ -1,0 +1,112 @@
+---
+
+- name: Setting hostname
+  hostname: name={{ hostname }}
+
+- name: Check if yum-utils is installed
+  command: rpm -q yum-utils
+  register: rpm_check
+  when: ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8'
+  ignore_errors: true
+
+- name: Installing yum-utils
+  dnf: name=yum-utils state=present
+  when: rpm_check.rc == 1 and ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8'
+  ignore_errors: false
+
+# Download and install EPEL for Centos/RHEL version 7
+- name: Download EPEL Repo - Centos/RHEL 7
+  dnf: name=epel-release state=latest
+  when: ansible_facts['distribution'] == 'CentOS' and ( ansible_facts['distribution_major_version'] == '7' or ansible_facts['distribution_major_version'] == '8' )
+
+- name: Download EPEL Repo - RedHat Linux 8
+  dnf: name=https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm state=present disable_gpg_check=true
+  when: ansible_facts['distribution'] == 'OracleLinux' and ansible_facts['distribution_major_version'] == '8'
+
+- name: Download EPEL Repo - Oracle Linux 8
+  dnf: name=oracle-epel-release-el8 state=present
+  when: ansible_facts['distribution'] == 'OracleLinux' and ansible_facts['distribution_major_version'] == '8'
+
+- name: Check if remi-release is installed
+  command: rpm -q remi-release
+  register: rpm_check
+  ignore_errors: true
+
+- name: Installing Remi Repo - Centos/RHEL 7
+  dnf: 
+    name: http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+    state: present
+    disable_gpg_check: true
+  when: rpm_check.rc == 1 and ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == '7'
+  ignore_errors: false
+
+- name: Installing Remi Repo - Centos/RHEL 8
+  dnf:
+    name: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+    state: present
+    disable_gpg_check: true
+  when: rpm_check.rc == 1 and ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8'
+  ignore_errors: false
+
+- name: yum | disable remi-modular repository
+  shell: yum-config-manager --disable remi-modular remi-safe
+  when: ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8'
+
+- name: yum | enable CentOS PowerTools repository
+  shell: yum-config-manager --enable powertools
+  when: ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == '8'
+
+- name: Cleanup DNF cache to avoid upgrade errors
+  shell: dnf clean all
+  when: ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8'
+
+- name: Remove DNF cache to avoid update errors
+  file:
+    path: /var/cache/dnf
+    state: absent
+  when: ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8'
+
+- name: Upgrade all packages
+  dnf: name="*" state=latest
+
+- name: Installing minimal soft
+  dnf: 
+    name: ['bash-completion', 'mc', 'vim', 'net-tools', 'bzip2', 'zip', 'p7zip', 'p7zip-plugins', 'unzip', 'lzma', 'ncompress', 'binutils', 'curl', 'gcc', 'openssl', 'patch', 'rpm', 'rpm-build', 'tar', 'openldap', 'openldap-clients', 'libpng', 'libXpm', 'elfutils', 'dwz', 'glibc.i686', 'libstdc++.i686', 'libzip']
+    state: present
+  register: result
+  ignore_errors: False
+  when: rpm_check.rc == 1 and ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == '7'
+
+- name: Installing minimal soft
+  dnf:
+    name: ['bash-completion', 'mc', 'vim', 'net-tools', 'tar', 'unzip', 'bzip2', 'zip', 'p7zip', 'p7zip-plugins', 'unzip', 'lzip', 'ncompress', 'binutils', 'curl', 'gcc', 'openssl', 'patch', 'rpm', 'rpm-build', 'tar', 'openldap', 'openldap-clients', 'libpng', 'libXpm', 'elfutils', 'dwz', 'glibc.i686', 'libstdc++.i686', 'libzip', 'lz4', 'spax', 'make']
+    state: present
+  register: result
+  ignore_errors: False
+  when: rpm_check.rc == 1 and ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8'
+
+- name: Getting add-on minimal soft
+  get_url: url=https://www.rarlab.com/rar/rarlinux-5.7.0.tar.gz dest=/tmp/rarlinux-5.7.0.tar.gz mode="0777"
+  register: result
+  ignore_errors: false
+
+- name: Extract files
+  unarchive:
+    remote_src: yes
+    src: /tmp/rarlinux-5.7.0.tar.gz
+    dest: /tmp/
+
+- name: Installing add-on minimal soft
+  make:
+    chdir: /tmp/rar
+  become: yes
+
+- name: Creating symlinks for rar
+  file:
+    src: /usr/local/bin/{{ item }}
+    dest: /usr/bin/{{ item }}
+    state: link
+  with_items:
+    - rar
+    - unrar
+

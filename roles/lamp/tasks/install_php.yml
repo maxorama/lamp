@@ -1,0 +1,26 @@
+---
+
+- name: Installing PHP
+  dnf: 
+    name: ['gnustep-base', 'libmemcached', 'memcached', 'lasso', 'postgresql-libs', 'libxml2-devel', 'libmcrypt', 'libtomcrypt', 'libargon2', 're2c', 'deltarpm', 'GeoIP', 'tnef', 'php-gd', 'php-common', 'php-cli', 'php', 'php-json', 'php-xml', 'php-mbstring', 'php-mysqlnd', 'php-imap', 'php-bcmath.x86_64', 'perl-Data-UUID.x86_64', 'perl-threads-shared.x86_64', 'perl-Net-CIDR-Lite', 'perl-Template-Toolkit.x86_64', 'perl-Text-CSV', 'perl-DBD-Pg.x86_64']
+    state: present
+    enablerepo: remi-php73
+  ignore_errors: false
+  when: ansible_facts['distribution'] == 'CentOS' and ansible_facts['distribution_major_version'] == '7'
+
+- name: Installing PHP
+  dnf:
+    name: ['libmemcached', 'memcached', 'lasso', 'postgresql-libs', 'libxml2-devel', 'libmcrypt', 'libtomcrypt', 'libargon2', 're2c', 'drpm', 'GeoIP', 'php', 'php-fpm','php-gd', 'php-common', 'php-cli', 'php-json', 'php-xml', 'php-mbstring', 'php-mysqlnd', 'php-bcmath', 'perl-Data-UUID.x86_64', 'perl-threads-shared.x86_64', 'perl-Net-CIDR-Lite', 'perl-Template-Toolkit.x86_64', 'perl-Text-CSV', 'perl-DBD-Pg.x86_64']
+    state: present
+    enablerepo: remi
+  ignore_errors: false
+  when: ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8' and php_custom == 'no'
+
+- name: Installing PHP Custom
+  dnf:
+    name: ['libmemcached', 'memcached', 'lasso', 'postgresql-libs', 'libxml2-devel', 'libmcrypt', 'libtomcrypt', 'libargon2', 're2c', 'drpm', 'GeoIP', '{{ php_version }}-php', '{{ php_version }}-php-fpm','{{ php_version }}-php-gd', '{{ php_version }}-php-common', '{{ php_version }}-php-cli', '{{ php_version }}-php-json', '{{ php_version }}-php-xml', '{{ php_version }}-php-mbstring', '{{ php_version }}-php-mysqlnd', '{{ php_version }}-php-bcmath', 'perl-Data-UUID.x86_64', 'perl-threads-shared.x86_64', 'perl-Net-CIDR-Lite', 'perl-Template-Toolkit.x86_64', 'perl-Text-CSV', 'perl-DBD-Pg.x86_64']
+    state: present
+    enablerepo: remi
+  ignore_errors: false
+  when: ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8' and php_custom == 'yes'
+
