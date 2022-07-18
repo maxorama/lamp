@@ -6,11 +6,11 @@
 
 - name: Opening HTTP firewall port
   firewalld:
-   service: http
-   zone: public
-   permanent: true
-   state: enabled
-   immediate: yes
+    service: http
+    zone: public
+    permanent: true
+    state: enabled
+    immediate: yes
   ignore_errors: true
 
 - name: Enable service Apache2
