@@ -1,0 +1,11 @@
+---
+
+- name: Post configuration
+  hosts: all
+  remote_user: root
+  tags: post_setup
+  gather_facts: yes
+
+  roles:
+    - post_setup
+    - reboot
