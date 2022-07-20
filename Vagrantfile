@@ -35,9 +35,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ovirt.insecure = true
     ovirt.debug = true
     ovirt.cluster = '<<Cluster>>'
-    ovirt.template = 'CentOS_7.6_Tmpl_Vagrant'
+    ovirt.template = 'Oracle_8.4_Tmpl_Vagrant'
     ovirt.console = 'spice'
-    ovirt.memory_size = '8 GiB' #see https://github.com/dominikh/filesize for usage
+    ovirt.memory_size = '8192 MB' #see https://github.com/dominikh/filesize for usage
     ovirt.memory_maximum = '8192 MB'
     ovirt.memory_guaranteed = '8192 MB' #see https://github.com/dominikh/filesize for usage
     ovirt.cpu_cores = 2
