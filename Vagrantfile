@@ -8,9 +8,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.box = 'ovirt4'
-  config.vm.box_url = 'https://github.com/myoung34/vagrant-ovirt4/blob/master/example_box/dummy.box?raw=true'
   config.vm.hostname = "foo"
-  config.ssh.private_key_path = "~/.ssh/id_rsa"
+  config.vm.box_url = 'https://github.com/myoung34/vagrant-ovirt4/blob/master/example_box/dummy.box?raw=true'
   config.ssh.forward_agent = true
   ssh_pub_key = File.readlines("~/.ssh/id_rsa.pub").first.strip
   config.vm.provision 'shell', inline: 'mkdir -p /root/.ssh'
