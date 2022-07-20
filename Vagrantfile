@@ -25,7 +25,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     :ovirt__gateway => '192.168.10.254',
     :ovirt__netmask => '255.255.255.0',
     :ovirt__dns_servers => '192.168.10.1',
-    :ovirt__dns_search => 'test.ru'
+    :ovirt__dns_search => 'test.ru',
     :ovirt__interface_name => 'enp1s0'
 
   config.vm.provider :ovirt4 do |ovirt|
