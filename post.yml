@@ -8,4 +8,12 @@
 
   roles:
     - post_setup
+
+- name: Rebooting host
+  hosts: all
+  become: no
+  remote_user: vagrant
+  gather_facts: yes
+
+  roles:
     - reboot

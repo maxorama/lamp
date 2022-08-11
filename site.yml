@@ -12,6 +12,5 @@
   tasks:
     - include_role: name=db
     - include_role: name=lamp
-    - include_role: name=reboot
 
 - import_playbook: post.yml
