@@ -23,4 +23,3 @@
     enablerepo: remi
   ignore_errors: false
   when: ( ansible_facts['distribution'] == 'OracleLinux' or ansible_facts['distribution'] == 'CentOS' ) and ansible_facts['distribution_major_version'] == '8' and php_custom == 'yes'
-
